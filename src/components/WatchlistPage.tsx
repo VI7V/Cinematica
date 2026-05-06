@@ -10,14 +10,24 @@ import { WatchlistItem } from "@/types";
 
 type WatchlistItemWithId = WatchlistItem & { _id: string };
 
+type FilterKey = "movie" | "tv" | "watching" | "watched";
+
 interface WatchlistPageProps {
   title: string;
   subtitle: string;
-  filterFn: (item: WatchlistItemWithId) => boolean;
+  filter: FilterKey;
   emptyText: string;
 }
 
-export function WatchlistPage({ title, subtitle, filterFn, emptyText }: WatchlistPageProps) {
+function applyFilter(item: WatchlistItemWithId, filter: FilterKey): boolean {
+  if (filter === "movie") return item.type === "movie";
+  if (filter === "tv") return item.type === "tv";
+  if (filter === "watching") return item.status === "watching";
+  if (filter === "watched") return item.status === "watched";
+  return true;
+}
+
+export function WatchlistPage({ title, subtitle, filter, emptyText }: WatchlistPageProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [watchlist, setWatchlist] = useState<WatchlistItemWithId[]>([]);
@@ -54,7 +64,7 @@ export function WatchlistPage({ title, subtitle, filterFn, emptyText }: Watchlis
     setWatchlist((prev) => prev.filter((item) => item._id !== id));
   }
 
-  const filtered = watchlist.filter(filterFn);
+  const filtered = watchlist.filter((item) => applyFilter(item, filter));
 
   if (status === "loading" || status === "unauthenticated") {
     return (

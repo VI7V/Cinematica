@@ -5,7 +5,7 @@ export default function WatchedPage() {
     <WatchlistPage
       title="Watched & Completed"
       subtitle="Your Achievements"
-      filterFn={(item) => item.status === "watched"}
+      filter="watched"
       emptyText="Nothing completed yet. Keep watching!"
     />
   );

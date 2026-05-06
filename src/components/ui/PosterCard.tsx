@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FiMoreVertical, FiTrash2, FiEye, FiCheckCircle, FiBookmark } from "react-icons/fi";
 import { getPosterUrl } from "@/lib/tmdb";
 import { WatchlistItem } from "@/types";
@@ -23,9 +23,21 @@ const statusConfig = {
 export function PosterCard({ item, onUpdate, onRemove, compact = false }: PosterCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const width = compact ? 120 : 160;
   const height = compact ? 180 : 240;
+
+  // Close on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [menuOpen]);
 
   async function handleStatus(status: string) {
     setLoading(true);
@@ -65,6 +77,7 @@ export function PosterCard({ item, onUpdate, onRemove, compact = false }: Poster
 
   return (
     <div
+      ref={cardRef}
       className="poster-card relative group"
       style={{ width }}
     >
@@ -106,9 +119,11 @@ export function PosterCard({ item, onUpdate, onRemove, compact = false }: Poster
         {item.title}
       </p>
 
-      {/* Dropdown menu */}
+      {/* Dropdown menu — outside overflow-hidden poster div to prevent clipping */}
       {menuOpen && (
-        <div className="absolute z-30 top-4 right-0 w-44 bg-cinema-charcoal border border-cinema-gold/20 rounded-lg shadow-card overflow-hidden">
+        <div className="absolute z-50 top-0 left-1/2 -translate-x-1/2 w-44 bg-cinema-charcoal border border-cinema-gold/20 rounded-lg shadow-card overflow-hidden"
+          style={{ marginTop: "-8px", transform: "translateX(-50%) translateY(-100%)" }}
+        >
           <p className="px-3 py-2 text-xs text-cinema-muted border-b border-cinema-gold/10">Change status</p>
           <button
             onClick={() => handleStatus("watching")}

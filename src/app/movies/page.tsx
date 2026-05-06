@@ -5,7 +5,7 @@ export default function MoviesPage() {
     <WatchlistPage
       title="Movies"
       subtitle="Your Cinema Collection"
-      filterFn={(item) => item.type === "movie"}
+      filter="movie"
       emptyText="No movies yet. Use search to add some!"
     />
   );

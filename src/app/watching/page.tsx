@@ -5,7 +5,7 @@ export default function WatchingPage() {
     <WatchlistPage
       title="Currently Watching"
       subtitle="In Progress"
-      filterFn={(item) => item.status === "watching"}
+      filter="watching"
       emptyText="Nothing in progress. Mark something as Watching!"
     />
   );
